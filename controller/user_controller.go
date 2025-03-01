@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"net/http"
 	"time"
 
@@ -22,7 +21,7 @@ type UserController struct {
 }
 
 func (u *UserController) Register(c *gin.Context) {
-	fmt.Print("register")
+
 	var registerRequest dto.RegisterRequest
 	if err := c.ShouldBindJSON(&registerRequest); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Data not valid"})
@@ -98,7 +97,6 @@ func (u *UserController) GetTransactions(c *gin.Context) {
 }
 
 func (u *UserController) Transfer(c *gin.Context) {
-	fmt.Print("Transfer1234")
 	user, err := u.UserService.GetUserByEmail(c.GetString("email"))
 
 	if err != nil {
@@ -122,8 +120,7 @@ func (u *UserController) Transfer(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Insufficient balance"})
 		return
 	}
-	fmt.Print("siini")
-	fmt.Print(transferRequest.To)
+
 	// Get user op
 	userOp, err := u.UserService.GetUserById(transferRequest.To)
 
@@ -148,7 +145,6 @@ func (u *UserController) Transfer(c *gin.Context) {
 }
 
 func (u *UserController) Login(c *gin.Context) {
-	fmt.Print("Login")
 	var loginRequest dto.LoginRequest
 	if err := c.ShouldBindJSON(&loginRequest); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Data not valid"})
@@ -163,7 +159,6 @@ func (u *UserController) Login(c *gin.Context) {
 	}
 
 	if user == nil {
-		fmt.Print("User not found")
 		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
 		return
 	}
@@ -193,7 +188,6 @@ func (u *UserController) Login(c *gin.Context) {
 }
 
 func (u *UserController) TokenTopUp(c *gin.Context) {
-	fmt.Print("TokenTopUp")
 	var tokenRequest dto.TokenRequest
 	if err := c.ShouldBindJSON(&tokenRequest); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Data not valid", "detail": err.Error()})
@@ -201,9 +195,7 @@ func (u *UserController) TokenTopUp(c *gin.Context) {
 	}
 
 	email := c.GetString("email")
-	fmt.Println("asdasd", email)
 	user, err := u.UserService.GetUserByEmail(email)
-	fmt.Println(user)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
 		return
@@ -234,12 +226,10 @@ func (u *UserController) TokenTopUp(c *gin.Context) {
 	}
 
 	snapResp, _ := snapc.CreateTransaction(reqSnap)
-	fmt.Println("snapResp", snapResp)
 	// if err != nil {
 	// 	fmt.Println("err", err)
 	// 	c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create transaction"})
 	// 	return
 	// }
-	fmt.Println("aku disini", snapResp)
 	c.JSON(http.StatusOK, gin.H{"token": snapResp})
 }
